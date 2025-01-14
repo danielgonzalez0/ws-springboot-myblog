@@ -22,9 +22,9 @@
         //méthodes CRUD à venir
 
         @GetMapping
-        public ResponseEntity<List<Article>> getAllArticles(){
+        public ResponseEntity<List<Article>> getAllArticles() {
             List<Article> articles = this.articleRepository.findAll();
-            if(articles.isEmpty()){
+            if (articles.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok(articles);
@@ -47,7 +47,7 @@
             return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
         }
 
-       @PutMapping("/{id}")
+        @PutMapping("/{id}")
         public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
 
             Article article = articleRepository.findById(id).orElse(null);
@@ -73,5 +73,41 @@
 
             articleRepository.delete(article);
             return ResponseEntity.noContent().build();
+        }
+
+        @GetMapping("/search-title")
+        public ResponseEntity<List<Article>> getArticlesByTitle(@RequestParam String searchTerms) {
+            List<Article> articles = articleRepository.findByTitle(searchTerms);
+            if (articles.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(articles);
+        }
+
+        @GetMapping("/search-content")
+        public ResponseEntity<List<Article>> getArticlesByContent(@RequestParam String searchTerms) {
+            List<Article> articles = articleRepository.findByContent(searchTerms);
+            if (articles.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(articles);
+        }
+
+        @GetMapping("/created-after")
+        public ResponseEntity<List<Article>> getArticlesCreateAfter(@RequestParam LocalDateTime createdAt) {
+            List<Article> articles = articleRepository.findByCreatedAtAfter(createdAt);
+            if (articles.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(articles);
+        }
+
+        @GetMapping("/last-created")
+        public ResponseEntity<List<Article>> getFiveLastArticles(){
+            List<Article> articles = articleRepository.findTop5ByOrderByCreatedAtDesc();
+            if (articles.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(articles);
         }
     }
