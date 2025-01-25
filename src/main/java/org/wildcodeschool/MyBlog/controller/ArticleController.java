@@ -7,9 +7,7 @@
     import org.wildcodeschool.MyBlog.model.Article;
     import org.wildcodeschool.MyBlog.model.Category;
     import org.wildcodeschool.MyBlog.model.Image;
-    import org.wildcodeschool.MyBlog.repository.ArticleRepository;
-    import org.wildcodeschool.MyBlog.repository.CategoryRepository;
-    import org.wildcodeschool.MyBlog.repository.ImageRepository;
+    import org.wildcodeschool.MyBlog.repository.*;
 
     import java.time.LocalDateTime;
     import java.util.ArrayList;
@@ -23,12 +21,20 @@
         private final ArticleRepository articleRepository;
         private final CategoryRepository categoryRepository;
         private final ImageRepository imageRepository;
+        private final AuthorRepository authorRepository;
+        private final ArticleAuthorRepository articleAuthorRepository;
 
 
-        public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
+        public ArticleController(ArticleRepository articleRepository,
+                                 CategoryRepository categoryRepository,
+                                 ImageRepository imageRepository,
+                                 AuthorRepository authorRepository,
+                                 ArticleAuthorRepository articleAuthorRepository) {
             this.articleRepository = articleRepository;
             this.categoryRepository = categoryRepository;
             this.imageRepository = imageRepository;
+            this.authorRepository = authorRepository;
+            this.articleAuthorRepository = articleAuthorRepository;
         }
         //méthodes mapper pour convertir un article en articleDTO
         private ArticleDTO convertToDTO(Article article) {
@@ -43,6 +49,7 @@
             if (article.getImages() != null) {
                 articleDTO.setImageUrls(article.getImages().stream().map(Image::getUrl).collect(Collectors.toList()));
             }
+            if(article.)
             return articleDTO;
         }
 

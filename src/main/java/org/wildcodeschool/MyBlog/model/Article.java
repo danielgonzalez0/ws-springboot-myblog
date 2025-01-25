@@ -35,6 +35,17 @@ public class Article {
     )
    private List<Image> images;
 
+    @OneToMany(mappedBy = "article")
+    private List<ArticleAuthor> articleAuthors;
+
+    public List<ArticleAuthor> getArticleAuthors() {
+        return articleAuthors;
+    }
+
+    public void setArticleAuthors(List<ArticleAuthor> articleAuthors) {
+        this.articleAuthors = articleAuthors;
+    }
+
     public List<Image> getImages() {
         return images;
     }

@@ -11,6 +11,15 @@ public class ArticleDTO {
     private LocalDateTime updatedAt;
     private String categoryName;
     private List<String> imageUrls;
+    private List<Long> authorIds;
+
+    public List<Long> getAuthorIds() {
+        return authorIds;
+    }
+
+    public void setAuthorIds(List<Long> authorIds) {
+        this.authorIds = authorIds;
+    }
 
     public Long getId() {
         return this.id;
