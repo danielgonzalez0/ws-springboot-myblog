@@ -3,6 +3,7 @@ package org.wildcodeschool.MyBlog.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.wildcodeschool.MyBlog.dto.ArticleAuthorDTO;
 import org.wildcodeschool.MyBlog.dto.AuthorDTO;
 import org.wildcodeschool.MyBlog.model.ArticleAuthor;
 import org.wildcodeschool.MyBlog.model.Author;
@@ -27,8 +28,15 @@ public class AuthorController {
         authorDTO.setFirstName(author.getFirstName());
         authorDTO.setLastName(author.getLastName());
         if(author.getArticleAuthors() != null) {
-            List<Long> articlesIds = author.getArticleAuthors().stream().map(ArticleAuthor::getId).collect(Collectors.toList());
-            authorDTO.setArticlesAuthor(articlesIds);
+            authorDTO.setArticlesAuthor(author.getArticleAuthors().stream()
+                    .map(articleAuthor ->{
+                        ArticleAuthorDTO articleAuthorDTO = new ArticleAuthorDTO();
+                        articleAuthorDTO.setId(articleAuthor.getId());
+                        articleAuthorDTO.setAuthorId(articleAuthor.getAuthor().getId());
+                        articleAuthorDTO.setArticleId(articleAuthor.getArticle().getId());
+                        articleAuthorDTO.setContribution(articleAuthor.getContribution());
+                        return articleAuthorDTO;
+                    }).collect(Collectors.toList()));
         }
         return authorDTO;
     }

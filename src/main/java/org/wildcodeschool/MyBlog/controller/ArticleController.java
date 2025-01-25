@@ -3,10 +3,10 @@
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
+    import org.wildcodeschool.MyBlog.dto.ArticleAuthorDTO;
     import org.wildcodeschool.MyBlog.dto.ArticleDTO;
-    import org.wildcodeschool.MyBlog.model.Article;
-    import org.wildcodeschool.MyBlog.model.Category;
-    import org.wildcodeschool.MyBlog.model.Image;
+    import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+    import org.wildcodeschool.MyBlog.model.*;
     import org.wildcodeschool.MyBlog.repository.*;
 
     import java.time.LocalDateTime;
@@ -49,7 +49,22 @@
             if (article.getImages() != null) {
                 articleDTO.setImageUrls(article.getImages().stream().map(Image::getUrl).collect(Collectors.toList()));
             }
-            if(article.)
+            //gestion author
+            if(article.getArticleAuthors() != null) {
+                articleDTO.setAuthors(article.getArticleAuthors().stream()
+                        .filter(articleAuthor -> articleAuthor.getAuthor().getId() != null)
+                        .map(articleAuthor -> {
+                            ArticleAuthorDTO articleAuthorDTO = new ArticleAuthorDTO();
+                            articleAuthorDTO.setId(articleAuthor.getId()); // Associer l'ID de ArticleAuthor
+                            articleAuthorDTO.setAuthorId(articleAuthor.getAuthor().getId()); // Associer l'ID de l'auteur
+                            articleAuthorDTO.setArticleId(articleAuthor.getArticle().getId()); // Associer l'ID de l'article
+                            articleAuthorDTO.setContribution(articleAuthor.getContribution()); // Ajout de la contribution
+                            return articleAuthorDTO; // Retourner l'objet ArticleAuthorDTO
+                        })
+                        .collect(Collectors.toList()));
+            }
+
+
             return articleDTO;
         }
 
@@ -118,8 +133,23 @@
                 article.setImages(validImages);
             }
 
-
             Article savedArticle = this.articleRepository.save(article);
+
+            /// gestion author
+            if(article.getArticleAuthors() != null){
+                for(ArticleAuthor articleAuthor : article.getArticleAuthors()){
+                    Author author = articleAuthor.getAuthor();
+                    author = this.authorRepository.findById(author.getId()).orElse(null);
+                    if(author == null){
+                        return ResponseEntity.badRequest().body(null);
+                    }
+                    articleAuthor.setAuthor(author);
+                    articleAuthor.setArticle(savedArticle);
+                    articleAuthor.setContribution(articleAuthor.getContribution());
+                    this.articleAuthorRepository.save(articleAuthor);
+                }
+            }
+            /// fin gestion author
             return ResponseEntity.status(HttpStatus.CREATED).body(this.convertToDTO(savedArticle));
         }
 
@@ -167,6 +197,36 @@
                 // Si aucune image n'est fournie, on nettoie la liste des images associées
                 article.getImages().clear();
             }
+            /// update author
+            if(articleDetails.getArticleAuthors() != null){
+                //supprimer manuellement les anciens ArticleAuthor
+                for(ArticleAuthor oldArticleAuthor : article.getArticleAuthors()){
+                    article.getArticleAuthors().remove(oldArticleAuthor);
+                }
+                List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
+                for (ArticleAuthor articleAuthorDetails : articleDetails.getArticleAuthors()) {
+                    Author author = articleAuthorDetails.getAuthor();
+                    author = this.authorRepository.findById(author.getId()).orElse(null);
+                    if (author == null) {
+                        return ResponseEntity.badRequest().build();
+                    }
+                    // Créer et associer la nouvelle relation ArticleAuthor
+                    ArticleAuthor newArticleAuthor = new ArticleAuthor();
+                    newArticleAuthor.setAuthor(author);
+                    newArticleAuthor.setArticle(article);
+                    newArticleAuthor.setContribution(articleAuthorDetails.getContribution());
+                    updatedArticleAuthors.add(newArticleAuthor);
+                }
+                for (ArticleAuthor articleAuthor : updatedArticleAuthors) {
+                    this.articleAuthorRepository.save(articleAuthor);
+                }
+
+                article.setArticleAuthors(updatedArticleAuthors);
+
+
+            }
+
+            /// end update author
 
             Article updatedArticle = this.articleRepository.save(article);
             return ResponseEntity.ok(this.convertToDTO(updatedArticle));
@@ -178,6 +238,13 @@
             Article article = this.articleRepository.findById(id).orElse(null);
             if (article == null) {
                 return ResponseEntity.notFound().build();
+            }
+
+            // Supprimer les associations ArticleAuthor manuellement
+            if (article.getArticleAuthors() != null) {
+                for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+                    this.articleAuthorRepository.delete(articleAuthor);
+                }
             }
 
             this.articleRepository.delete(article);
