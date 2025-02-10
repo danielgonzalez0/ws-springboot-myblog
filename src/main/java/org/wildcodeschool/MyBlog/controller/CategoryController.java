@@ -3,15 +3,11 @@ package org.wildcodeschool.MyBlog.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wildcodeschool.MyBlog.dto.ArticleDTO;
 import org.wildcodeschool.MyBlog.dto.CategoryDTO;
 import org.wildcodeschool.MyBlog.model.Category;
-import org.wildcodeschool.MyBlog.repository.CategoryRepository;
 import org.wildcodeschool.MyBlog.service.CategoryService;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/categories")
