@@ -58,7 +58,7 @@ public class ImageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
-        if (this.imageService.deleteImage(id)) {
+        if (!this.imageService.deleteImage(id)) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
