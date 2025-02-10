@@ -7,6 +7,7 @@ import org.wildcodeschool.MyBlog.dto.ArticleDTO;
 import org.wildcodeschool.MyBlog.dto.CategoryDTO;
 import org.wildcodeschool.MyBlog.model.Category;
 import org.wildcodeschool.MyBlog.repository.CategoryRepository;
+import org.wildcodeschool.MyBlog.service.CategoryService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,81 +17,56 @@ import java.util.stream.Collectors;
 @RequestMapping("/categories")
 public class CategoryController {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
-
-    private CategoryDTO convertToDTO(Category category){
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setId(category.getId());
-        categoryDTO.setName(category.getName());
-        if(category.getArticles() != null) {
-            categoryDTO.setArticles(category.getArticles().stream().map(article -> {
-                ArticleDTO articleDTO = new ArticleDTO();
-                articleDTO.setId(article.getId());
-                articleDTO.setTitle(article.getTitle());
-                articleDTO.setContent(article.getContent());
-                articleDTO.setUpdatedAt(article.getUpdatedAt());
-                articleDTO.setCategoryName(article.getCategory().getName());
-                return articleDTO;
-            }).collect(Collectors.toList()));
-        }
-        return categoryDTO;
-    }
-
-    private List<CategoryDTO> convertToDTOList(List<Category> categories){
-        return categories.stream().
-                map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     //méthodes CRUD
 
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories(){
-        List<Category> categories = this.categoryRepository.findAll();
+        List<CategoryDTO> categories = this.categoryService.getAllCategories();
         if(categories.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(this.convertToDTOList(categories));
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id){
-        Category category = this.categoryRepository.findById(id).orElse(null);
+        CategoryDTO category = this.categoryService.getCategoryById(id);
         if(category == null){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(this.convertToDTO(category));
+        return ResponseEntity.ok(category);
     }
 
     @PostMapping
     public ResponseEntity<CategoryDTO> createArticle(@RequestBody Category category) {
-        Category savedCategory = this.categoryRepository.save(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.convertToDTO(savedCategory));
+        CategoryDTO newCategory = this.categoryService.createCategory(category);
+        if (newCategory == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
-        Category category = this.categoryRepository.findById(id).orElse(null);
+        CategoryDTO category = this.categoryService.updateCategory(id, categoryDetails);
         if (category == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
-        category.setName(categoryDetails.getName());
-
-        Category updatedCategory = this.categoryRepository.save(category);
-        return ResponseEntity.ok(this.convertToDTO(updatedCategory));
+        return ResponseEntity.ok(category);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        Category category = this.categoryRepository.findById(id).orElse(null);
-        if (category == null) {
-            return ResponseEntity.notFound().build();
+      if(this.categoryService.deleteCategory(id)){
+          return ResponseEntity.noContent().build();
+        } else {
+          return ResponseEntity.notFound().build();
         }
-        this.categoryRepository.delete(category);
-        return ResponseEntity.noContent().build();
     }
 }

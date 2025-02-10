@@ -65,7 +65,7 @@ ArticleDTO articleDTO = this.articleService.updateArticle(id, articleDetails);
 
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
-            if (articleService.deleteArticle(id)) {
+            if (this.articleService.deleteArticle(id)) {
                 return ResponseEntity.noContent().build();
             } else {
                 return ResponseEntity.notFound().build();
