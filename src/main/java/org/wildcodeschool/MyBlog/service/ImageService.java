@@ -2,9 +2,10 @@ package org.wildcodeschool.MyBlog.service;
 
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.exception.BadRequestException;
+import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.ImageMapper;
 import org.wildcodeschool.MyBlog.model.Image;
-import org.wildcodeschool.MyBlog.repository.ArticleRepository;
 import org.wildcodeschool.MyBlog.repository.ImageRepository;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ImageService {
     public List<ImageDTO> getAllImages(){
         List<Image> images = this.imageRepository.findAll();
         if(images.isEmpty()){
-            return null;
+          throw new ResourceNotFoundException("No image found");
         }
         return images.stream()
                 .map(this.imageMapper::convertToDTO)
@@ -33,36 +34,30 @@ public class ImageService {
     }
 
     public ImageDTO getImageById(Long id){
-        Image image = this.imageRepository.findById(id).orElse(null);
-        if(image == null){
-            return null;
-        }
+        Image image = this.imageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Image not found with id : " + id));
         return this.imageMapper.convertToDTO(image);
     }
 
     public ImageDTO createImage(Image image){
         Image savedImage = this.imageRepository.save(image);
         if (savedImage == null){
-            return null;
+            throw  new BadRequestException("Image not saved");
         }
         return imageMapper.convertToDTO(savedImage);
     }
 
     public ImageDTO updateImage(Long id, Image imageDetails){
-        Image image = this.imageRepository.findById(id).orElse(null);
-        if(image == null){
-            return null;
-        }
+        Image image = this.imageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Image not found with id : " + id));
         image.setUrl(imageDetails.getUrl());
         Image updatedImage = this.imageRepository.save(image);
         return this.imageMapper.convertToDTO(updatedImage);
     }
 
     public boolean deleteImage(Long id){
-        Image image = this.imageRepository.findById(id).orElse(null);
-        if(image == null){
-            return false;
-        }
+        Image image = this.imageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Image not found with id : " + id));
         this.imageRepository.delete(image);
         return true;
     }
