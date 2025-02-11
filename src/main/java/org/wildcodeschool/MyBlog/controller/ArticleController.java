@@ -30,46 +30,31 @@
         @GetMapping
         public ResponseEntity<List<ArticleDTO>> getAllArticles() {
             List<ArticleDTO> articles = this.articleService.getAllArticles();
-            if (articles.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
             return ResponseEntity.ok(articles);
         }
 
         @GetMapping("/{id}")
         public ResponseEntity<ArticleDTO> getArticleById(@PathVariable Long id) {
             ArticleDTO article = this.articleService.getArticleById(id);
-            if (article == null) {
-                return ResponseEntity.notFound().build();
-            }
             return ResponseEntity.ok(article);
         }
 
         @PostMapping
         public ResponseEntity<ArticleDTO> createArticle(@RequestBody Article article) {
             ArticleDTO articleDTO = this.articleService.createArticle(article);
-            if (articleDTO == null) {
-                return ResponseEntity.badRequest().build();
-            }
             return ResponseEntity.status(HttpStatus.CREATED).body(articleDTO);
         }
 
         @PutMapping("/{id}")
         public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
 ArticleDTO articleDTO = this.articleService.updateArticle(id, articleDetails);
-            if (articleDTO == null) {
-                return ResponseEntity.badRequest().build();
-            }
             return ResponseEntity.ok(articleDTO);
         }
 
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
-            if (this.articleService.deleteArticle(id)) {
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            this.articleService.deleteArticle(id);
+            return ResponseEntity.noContent().build();
         }
 
         @GetMapping("/search-title")

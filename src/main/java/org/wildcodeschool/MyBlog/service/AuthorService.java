@@ -3,6 +3,8 @@ package org.wildcodeschool.MyBlog.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+import org.wildcodeschool.MyBlog.exception.BadRequestException;
+import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.AuthorMapper;
 import org.wildcodeschool.MyBlog.model.Author;
 import org.wildcodeschool.MyBlog.repository.AuthorRepository;
@@ -24,7 +26,7 @@ public class AuthorService {
     public List<AuthorDTO> getAllAuthors(){
         List<Author> authors = this.authorRepository.findAll();
         if(authors.isEmpty()) {
-            return null;
+            throw new ResourceNotFoundException("No author found");
         }
         return authors.stream()
                 .map(this.authorMapper::convertToDTO)
@@ -32,26 +34,22 @@ public class AuthorService {
     }
 
     public AuthorDTO getAuthorById(Long id){
-        Author author = this.authorRepository.findById(id).orElse(null);
-        if(author == null){
-            return null;
-        }
+        Author author = this.authorRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Author not found with id : " + id));
         return this.authorMapper.convertToDTO(author);
     }
 
     public AuthorDTO createAuthor(Author author){
         Author savedAuthor = this.authorRepository.save(author);
         if (!(savedAuthor instanceof Author) ){
-            return null;
+            throw new BadRequestException("Author not saved");
         }
         return authorMapper.convertToDTO(savedAuthor);
     }
 
     public AuthorDTO updateAuthor(Long id, Author authorDetails){
-        Author author = this.authorRepository.findById(id).orElse(null);
-        if(author == null){
-            return null;
-        }
+        Author author = this.authorRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Author not found with id : " + id));
         author.setFirstName(authorDetails.getFirstName());
         author.setLastName(authorDetails.getLastName());
         Author updatedAuthor = this.authorRepository.save(author);
@@ -59,10 +57,8 @@ public class AuthorService {
     }
 
     public Boolean deleteAuthor(Long id){
-        Author author = this.authorRepository.findById(id).orElse(null);
-        if(author == null){
-            return false;
-        }
+        Author author = this.authorRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Author not found with id : " + id));
         this.authorRepository.delete(author);
         return true;
     }
