@@ -24,45 +24,30 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories(){
         List<CategoryDTO> categories = this.categoryService.getAllCategories();
-        if(categories.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id){
         CategoryDTO category = this.categoryService.getCategoryById(id);
-        if(category == null){
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(category);
     }
 
     @PostMapping
     public ResponseEntity<CategoryDTO> createArticle(@RequestBody Category category) {
         CategoryDTO newCategory = this.categoryService.createCategory(category);
-        if (newCategory == null) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
         CategoryDTO category = this.categoryService.updateCategory(id, categoryDetails);
-        if (category == null) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(category);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-      if(this.categoryService.deleteCategory(id)){
-          return ResponseEntity.noContent().build();
-        } else {
-          return ResponseEntity.notFound().build();
-        }
+        this.categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
