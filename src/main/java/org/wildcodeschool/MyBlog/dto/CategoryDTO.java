@@ -1,5 +1,7 @@
 package org.wildcodeschool.MyBlog.dto;
 
+import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
+
 import java.util.List;
 
 public class CategoryDTO {

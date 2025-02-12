@@ -1,7 +1,6 @@
 package org.wildcodeschool.MyBlog.dto;
 
-import org.wildcodeschool.MyBlog.model.ArticleAuthor;
-import org.wildcodeschool.MyBlog.model.Author;
+import org.wildcodeschool.MyBlog.dto.article.ArticleAuthorDTO;
 
 import java.util.List;
 

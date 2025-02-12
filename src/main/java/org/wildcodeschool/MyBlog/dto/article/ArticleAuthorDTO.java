@@ -1,4 +1,4 @@
-package org.wildcodeschool.MyBlog.dto;
+package org.wildcodeschool.MyBlog.dto.article;
 
 public class ArticleAuthorDTO {
     private Long id;

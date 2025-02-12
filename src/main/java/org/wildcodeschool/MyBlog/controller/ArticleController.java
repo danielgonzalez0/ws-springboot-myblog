@@ -1,19 +1,16 @@
     package org.wildcodeschool.MyBlog.controller;
 
+    import jakarta.validation.Valid;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
-    import org.wildcodeschool.MyBlog.dto.ArticleAuthorDTO;
-    import org.wildcodeschool.MyBlog.dto.ArticleDTO;
-    import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+    import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
+    import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
     import org.wildcodeschool.MyBlog.model.*;
-    import org.wildcodeschool.MyBlog.repository.*;
     import org.wildcodeschool.MyBlog.service.ArticleService;
 
     import java.time.LocalDateTime;
-    import java.util.ArrayList;
     import java.util.List;
-    import java.util.stream.Collectors;
 
     @RestController
     @RequestMapping("/articles")
@@ -40,8 +37,8 @@
         }
 
         @PostMapping
-        public ResponseEntity<ArticleDTO> createArticle(@RequestBody Article article) {
-            ArticleDTO articleDTO = this.articleService.createArticle(article);
+        public ResponseEntity<ArticleDTO> createArticle(@Valid @RequestBody ArticleCreateDTO articleCreateDTO) {
+            ArticleDTO articleDTO = this.articleService.createArticle(articleCreateDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(articleDTO);
         }
 

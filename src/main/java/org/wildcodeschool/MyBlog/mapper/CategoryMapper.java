@@ -1,7 +1,7 @@
 package org.wildcodeschool.MyBlog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wildcodeschool.MyBlog.dto.ArticleDTO;
+import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
 import org.wildcodeschool.MyBlog.dto.CategoryDTO;
 import org.wildcodeschool.MyBlog.model.Category;
 

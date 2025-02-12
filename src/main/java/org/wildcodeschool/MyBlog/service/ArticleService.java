@@ -1,12 +1,14 @@
 package org.wildcodeschool.MyBlog.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.wildcodeschool.MyBlog.dto.ArticleDTO;
+import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
+import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
+import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
 import org.wildcodeschool.MyBlog.exception.BadRequestException;
 import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.ArticleMapper;
+import org.wildcodeschool.MyBlog.mapper.ImageMapper;
 import org.wildcodeschool.MyBlog.model.*;
 import org.wildcodeschool.MyBlog.repository.*;
 
@@ -21,14 +23,22 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
+    private final ImageMapper imageMapper;
     private final AuthorRepository authorRepository;
     private final ArticleAuthorRepository articleAuthorRepository;
 
-    public ArticleService(ArticleRepository articleRepository, ArticleMapper articleMapper, CategoryRepository categoryRepository, ImageRepository imageRepository, AuthorRepository authorRepository, ArticleAuthorRepository articleAuthorRepository) {
+    public ArticleService(ArticleRepository articleRepository,
+                          ArticleMapper articleMapper,
+                          CategoryRepository categoryRepository,
+                          ImageRepository imageRepository,
+                          ImageMapper imageMapper,
+                          AuthorRepository authorRepository,
+                          ArticleAuthorRepository articleAuthorRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+        this.imageMapper = imageMapper;
         this.authorRepository = authorRepository;
         this.articleAuthorRepository = articleAuthorRepository;
     }
@@ -47,21 +57,22 @@ public class ArticleService {
         return this.articleMapper.convertToDTO(article);
     }
 
-    public ArticleDTO createArticle(Article article){
+    public ArticleDTO createArticle(ArticleCreateDTO articleCreateDTO){
+        Article article = this.articleMapper.convertToEntity(articleCreateDTO);
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
 
         //ajout catégorie
-        if(article.getCategory() != null){
-            Category category = this.categoryRepository.findById(article.getCategory().getId())
-                    .orElseThrow(()-> new BadRequestException("No existing Category with id : " + article.getCategory().getId()));
+        if(articleCreateDTO.getCategoryId() != null){
+            Category category = this.categoryRepository.findById(articleCreateDTO.getCategoryId())
+                    .orElseThrow(()-> new BadRequestException("No existing Category with id : " + articleCreateDTO.getCategoryId()));
             article.setCategory(category);
         }
 
         //Modif image
-        if (article.getImages() != null && !article.getImages().isEmpty()) {
+        if (articleCreateDTO.getImages() != null && !articleCreateDTO.getImages().isEmpty()) {
             List<Image> validImages = new ArrayList<>();
-            for (Image image : article.getImages()) {
+            for (ImageDTO image : articleCreateDTO.getImages()) {
                 if (image.getId() != null) {
                     // Vérification des images existantes
                     Image existingImage = this.imageRepository.findById(image.getId())
@@ -73,7 +84,7 @@ public class ArticleService {
                     }
                 } else {
                     // Création de nouvelles images
-                    Image savedImage = this.imageRepository.save(image);
+                    Image savedImage = this.imageRepository.save(this.imageMapper.convertToEntity(image));
                     validImages.add(savedImage);
                 }
             }
@@ -82,15 +93,15 @@ public class ArticleService {
         Article savedArticle = this.articleRepository.save(article);
 
         /// gestion author
-        if(article.getArticleAuthors() != null){
-            for(ArticleAuthor articleAuthor : article.getArticleAuthors()){
-                Author author = articleAuthor.getAuthor();
-                Author finalAuthor = this.authorRepository.findById(author.getId())
-                        .orElseThrow(()-> new BadRequestException("No existing Author with id : " + author.getId()));
-
+        if(articleCreateDTO.getAuthors() != null){
+            for(AuthorContributionDTO authorContributionDTO : articleCreateDTO.getAuthors()){
+                Long authorId = authorContributionDTO.getAuthorId();
+                Author finalAuthor = this.authorRepository.findById(authorId)
+                        .orElseThrow(()-> new BadRequestException("No existing Author with id : " + authorId));
+                ArticleAuthor articleAuthor = new ArticleAuthor();
                 articleAuthor.setAuthor(finalAuthor);
                 articleAuthor.setArticle(savedArticle);
-                articleAuthor.setContribution(articleAuthor.getContribution());
+                articleAuthor.setContribution(authorContributionDTO.getContribution());
                 this.articleAuthorRepository.save(articleAuthor);
             }
         }
