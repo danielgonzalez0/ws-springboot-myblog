@@ -6,6 +6,7 @@
     import org.springframework.web.bind.annotation.*;
     import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
     import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
+    import org.wildcodeschool.MyBlog.dto.article.ArticleUpdateDTO;
     import org.wildcodeschool.MyBlog.model.*;
     import org.wildcodeschool.MyBlog.service.ArticleService;
 
@@ -43,8 +44,8 @@
         }
 
         @PutMapping("/{id}")
-        public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
-ArticleDTO articleDTO = this.articleService.updateArticle(id, articleDetails);
+        public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleUpdateDTO articleDetails) {
+        ArticleDTO articleDTO = this.articleService.updateArticle(id, articleDetails);
             return ResponseEntity.ok(articleDTO);
         }
 

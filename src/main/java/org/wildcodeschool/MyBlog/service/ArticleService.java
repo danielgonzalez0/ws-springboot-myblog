@@ -5,6 +5,7 @@ import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
 import org.wildcodeschool.MyBlog.dto.ImageDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
+import org.wildcodeschool.MyBlog.dto.article.ArticleUpdateDTO;
 import org.wildcodeschool.MyBlog.exception.BadRequestException;
 import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.ArticleMapper;
@@ -14,6 +15,7 @@ import org.wildcodeschool.MyBlog.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,7 +110,8 @@ public class ArticleService {
         return this.articleMapper.convertToDTO(savedArticle);
     }
 
-    public ArticleDTO updateArticle(Long id , Article articleDetails) {
+    public ArticleDTO updateArticle(Long id , ArticleUpdateDTO articleDetails) {
+
         Article article = this.articleRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Article not found with id : " + id));
         article.setTitle(articleDetails.getTitle());
@@ -116,16 +119,16 @@ public class ArticleService {
         article.setUpdatedAt(LocalDateTime.now());
 
         // Mise à jour de la catégorie
-        if (articleDetails.getCategory() != null) {
-            Category category = this.categoryRepository.findById(articleDetails.getCategory().getId())
-                    .orElseThrow(()-> new BadRequestException("No existing Category with id : " + article.getCategory().getId()));
+        if (articleDetails.getCategoryId() != null) {
+            Category category = this.categoryRepository.findById(articleDetails.getCategoryId())
+                    .orElseThrow(()-> new BadRequestException("No existing Category with id : " + articleDetails.getCategoryId()));
             article.setCategory(category);
         }
 
         // Mise à jour des images
         if (articleDetails.getImages() != null) {
             List<Image> validImages = new ArrayList<>();
-            for (Image image : articleDetails.getImages()) {
+            for (ImageDTO image : articleDetails.getImages()) {
                 if (image.getId() != null) {
                     // Vérification des images existantes
                     Image existingImage = imageRepository.findById(image.getId())
@@ -137,7 +140,7 @@ public class ArticleService {
                     }
                 } else {
                     // Création de nouvelles images
-                    Image savedImage = imageRepository.save(image);
+                    Image savedImage = this.imageRepository.save(this.imageMapper.convertToEntity(image));
                     validImages.add(savedImage);
                 }
             }
@@ -148,21 +151,27 @@ public class ArticleService {
             article.getImages().clear();
         }
         /// update author
-        if(articleDetails.getArticleAuthors() != null){
-            //supprimer manuellement les anciens ArticleAuthor
-            for(ArticleAuthor oldArticleAuthor : article.getArticleAuthors()){
-                article.getArticleAuthors().remove(oldArticleAuthor);
+        if(articleDetails.getAuthors() != null){
+//            //supprimer manuellement les anciens ArticleAuthor
+
+            Iterator<ArticleAuthor> iterator = article.getArticleAuthors().iterator();
+            while (iterator.hasNext()) {
+                ArticleAuthor articleAuthor = iterator.next();
+                iterator.remove();
+                this.articleAuthorRepository.delete(articleAuthor);
             }
+
+
             List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
-            for (ArticleAuthor articleAuthorDetails : articleDetails.getArticleAuthors()) {
-                Author author = articleAuthorDetails.getAuthor();
-                Author finalAuthor = this.authorRepository.findById(author.getId())
-                        .orElseThrow(()-> new BadRequestException("No existing Author with id : " + author.getId()));
+            for (AuthorContributionDTO authorContributionDTO : articleDetails.getAuthors()) {
+                Long authorId = authorContributionDTO.getAuthorId();
+                Author finalAuthor = this.authorRepository.findById(authorId)
+                        .orElseThrow(()-> new BadRequestException("No existing Author with id : " + authorId));
                 // Créer et associer la nouvelle relation ArticleAuthor
                 ArticleAuthor newArticleAuthor = new ArticleAuthor();
                 newArticleAuthor.setAuthor(finalAuthor);
                 newArticleAuthor.setArticle(article);
-                newArticleAuthor.setContribution(articleAuthorDetails.getContribution());
+                newArticleAuthor.setContribution(authorContributionDTO.getContribution());
                 updatedArticleAuthors.add(newArticleAuthor);
             }
             for (ArticleAuthor articleAuthor : updatedArticleAuthors) {
