@@ -1,8 +1,8 @@
 package org.wildcodeschool.MyBlog.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorCreateDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorDTO;
 import org.wildcodeschool.MyBlog.exception.BadRequestException;
 import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.AuthorMapper;
@@ -39,7 +39,8 @@ public class AuthorService {
         return this.authorMapper.convertToDTO(author);
     }
 
-    public AuthorDTO createAuthor(Author author){
+    public AuthorDTO createAuthor(AuthorCreateDTO authorCreateDTO){
+        Author author = this.authorMapper.convertToEntity(authorCreateDTO);
         Author savedAuthor = this.authorRepository.save(author);
         if (!(savedAuthor instanceof Author) ){
             throw new BadRequestException("Author not saved");
@@ -47,7 +48,7 @@ public class AuthorService {
         return authorMapper.convertToDTO(savedAuthor);
     }
 
-    public AuthorDTO updateAuthor(Long id, Author authorDetails){
+    public AuthorDTO updateAuthor(Long id, AuthorCreateDTO authorDetails){
         Author author = this.authorRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Author not found with id : " + id));
         author.setFirstName(authorDetails.getFirstName());

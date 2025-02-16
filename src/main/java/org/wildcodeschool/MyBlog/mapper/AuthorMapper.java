@@ -2,7 +2,8 @@ package org.wildcodeschool.MyBlog.mapper;
 
 import org.springframework.stereotype.Component;
 import org.wildcodeschool.MyBlog.dto.article.ArticleAuthorDTO;
-import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorCreateDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorDTO;
 import org.wildcodeschool.MyBlog.model.Author;
 
 import java.util.stream.Collectors;
@@ -27,5 +28,12 @@ public class AuthorMapper {
                     }).collect(Collectors.toList()));
         }
         return authorDTO;
+    }
+
+    public Author convertToEntity(AuthorCreateDTO authorCreateDTO) {
+        Author author = new Author();
+        author.setFirstName(authorCreateDTO.getFirstName());
+        author.setLastName(authorCreateDTO.getLastName());
+        return author;
     }
 }

@@ -1,9 +1,11 @@
 package org.wildcodeschool.MyBlog.controller;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wildcodeschool.MyBlog.dto.AuthorDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorCreateDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorDTO;
 import org.wildcodeschool.MyBlog.model.Author;
 import org.wildcodeschool.MyBlog.service.AuthorService;
 
@@ -32,14 +34,14 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author author) {
-       AuthorDTO savedAuthor = this.authorService.createAuthor(author);
+    public ResponseEntity<AuthorDTO> createAuthor(@Valid @RequestBody AuthorCreateDTO authorCreateDTO) {
+       AuthorDTO savedAuthor = this.authorService.createAuthor(authorCreateDTO);
        return ResponseEntity.status(201).body(savedAuthor);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable long id, @RequestBody Author author) {
-        AuthorDTO updatedAuthor = this.authorService.updateAuthor(id, author);
+    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable long id,@Valid @RequestBody AuthorCreateDTO authorCreateDTO) {
+        AuthorDTO updatedAuthor = this.authorService.updateAuthor(id, authorCreateDTO);
         return ResponseEntity.ok(updatedAuthor);
     }
 

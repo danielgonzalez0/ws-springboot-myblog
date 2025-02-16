@@ -1,4 +1,4 @@
-package org.wildcodeschool.MyBlog.dto;
+package org.wildcodeschool.MyBlog.dto.author;
 
 import org.wildcodeschool.MyBlog.dto.article.ArticleAuthorDTO;
 

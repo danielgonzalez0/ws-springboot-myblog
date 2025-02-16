@@ -2,7 +2,7 @@ package org.wildcodeschool.MyBlog.dto.article;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorContributionDTO;
 import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
 
 import java.util.List;

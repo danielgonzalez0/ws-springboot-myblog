@@ -1,18 +1,11 @@
 package org.wildcodeschool.MyBlog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
-import org.wildcodeschool.MyBlog.dto.AuthorDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleAuthorDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
-import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.model.*;
-import org.wildcodeschool.MyBlog.repository.AuthorRepository;
-import org.wildcodeschool.MyBlog.repository.CategoryRepository;
-import org.wildcodeschool.MyBlog.repository.ImageRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

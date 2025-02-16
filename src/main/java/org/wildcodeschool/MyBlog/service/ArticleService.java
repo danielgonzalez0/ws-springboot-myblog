@@ -1,7 +1,7 @@
 package org.wildcodeschool.MyBlog.service;
 
 import org.springframework.stereotype.Service;
-import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
+import org.wildcodeschool.MyBlog.dto.author.AuthorContributionDTO;
 import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
