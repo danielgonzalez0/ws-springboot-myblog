@@ -1,7 +1,8 @@
 package org.wildcodeschool.MyBlog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
 import org.wildcodeschool.MyBlog.model.Article;
 import org.wildcodeschool.MyBlog.model.Image;
 
@@ -17,6 +18,12 @@ public class ImageMapper {
             imageDTO.setArticleIds(image.getArticles().stream().map(Article::getId).collect(Collectors.toList()));
         }
         return imageDTO;
+    }
+
+    public Image convertToEntity(ImageCreateDTO imageCreateDTO) {
+        Image image = new Image();
+        image.setUrl(imageCreateDTO.getUrl());
+        return image;
     }
 
     public Image convertToEntity(ImageDTO imageDTO) {

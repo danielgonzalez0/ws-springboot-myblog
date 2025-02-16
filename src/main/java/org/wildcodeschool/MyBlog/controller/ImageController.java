@@ -1,8 +1,10 @@
 package org.wildcodeschool.MyBlog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
 import org.wildcodeschool.MyBlog.model.Image;
 import org.wildcodeschool.MyBlog.service.ImageService;
 
@@ -33,13 +35,13 @@ public class ImageController {
     }
 
     @PostMapping
-    public ResponseEntity<ImageDTO> createImage(@RequestBody Image image) {
-    ImageDTO savedImage = this.imageService.createImage(image);
+    public ResponseEntity<ImageDTO> createImage(@Valid @RequestBody ImageCreateDTO imageCreateDTO) {
+    ImageDTO savedImage = this.imageService.createImage(imageCreateDTO);
         return ResponseEntity.status(201).body(savedImage);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ImageDTO> updateImage(@PathVariable Long id, @RequestBody Image imageDetails) {
+    public ResponseEntity<ImageDTO> updateImage(@PathVariable Long id, @Valid @RequestBody ImageDTO imageDetails) {
         ImageDTO updatedImage = this.imageService.updateImage(id, imageDetails);
         return ResponseEntity.ok(updatedImage);
     }

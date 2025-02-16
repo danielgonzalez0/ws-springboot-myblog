@@ -2,10 +2,11 @@ package org.wildcodeschool.MyBlog.service;
 
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
-import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
 import org.wildcodeschool.MyBlog.dto.article.ArticleUpdateDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
 import org.wildcodeschool.MyBlog.exception.BadRequestException;
 import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.ArticleMapper;
@@ -74,7 +75,7 @@ public class ArticleService {
         //Modif image
         if (articleCreateDTO.getImages() != null && !articleCreateDTO.getImages().isEmpty()) {
             List<Image> validImages = new ArrayList<>();
-            for (ImageDTO image : articleCreateDTO.getImages()) {
+            for (ImageCreateDTO image : articleCreateDTO.getImages()) {
                 if (image.getId() != null) {
                     // Vérification des images existantes
                     Image existingImage = this.imageRepository.findById(image.getId())
@@ -136,7 +137,7 @@ public class ArticleService {
                     if (existingImage != null) {
                         validImages.add(existingImage);
                     } else {
-                        throw new BadRequestException("No existing image with id : " + image.getId());
+                        throw new BadRequestException("No existing image with url : " + image.getId());
                     }
                 } else {
                     // Création de nouvelles images

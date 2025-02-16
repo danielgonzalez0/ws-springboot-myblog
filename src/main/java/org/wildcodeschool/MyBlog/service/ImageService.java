@@ -1,7 +1,8 @@
 package org.wildcodeschool.MyBlog.service;
 
 import org.springframework.stereotype.Service;
-import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
 import org.wildcodeschool.MyBlog.exception.BadRequestException;
 import org.wildcodeschool.MyBlog.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlog.mapper.ImageMapper;
@@ -39,7 +40,8 @@ public class ImageService {
         return this.imageMapper.convertToDTO(image);
     }
 
-    public ImageDTO createImage(Image image){
+    public ImageDTO createImage(ImageCreateDTO imageCreateDTO){
+        Image image = this.imageMapper.convertToEntity(imageCreateDTO);
         Image savedImage = this.imageRepository.save(image);
         if (savedImage == null){
             throw  new BadRequestException("Image not saved");
@@ -47,11 +49,12 @@ public class ImageService {
         return imageMapper.convertToDTO(savedImage);
     }
 
-    public ImageDTO updateImage(Long id, Image imageDetails){
-        Image image = this.imageRepository.findById(id)
+    public ImageDTO updateImage(Long id, ImageDTO imageDetails){
+        Image image = this.imageMapper.convertToEntity(imageDetails);
+        Image imageUpdated = this.imageRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Image not found with id : " + id));
-        image.setUrl(imageDetails.getUrl());
-        Image updatedImage = this.imageRepository.save(image);
+        imageUpdated.setUrl(imageDetails.getUrl());
+        Image updatedImage = this.imageRepository.save(imageUpdated);
         return this.imageMapper.convertToDTO(updatedImage);
     }
 

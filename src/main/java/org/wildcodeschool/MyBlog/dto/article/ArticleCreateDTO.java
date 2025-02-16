@@ -3,7 +3,7 @@ package org.wildcodeschool.MyBlog.dto.article;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.wildcodeschool.MyBlog.dto.AuthorContributionDTO;
-import org.wildcodeschool.MyBlog.dto.ImageDTO;
+import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class ArticleCreateDTO {
     private Long categoryId;
 
     @NotEmpty(message = "La liste des images ne doit pas être vide")
-    private List<@Valid ImageDTO> images;
+    private List<@Valid ImageCreateDTO> images;
 
     @NotEmpty(message = "La liste des auteurs ne doit pas être vide")
     private List<@Valid AuthorContributionDTO> authors;
@@ -51,11 +51,11 @@ public class ArticleCreateDTO {
         this.categoryId = categoryId;
     }
 
-    public List<ImageDTO> getImages() {
+    public List<ImageCreateDTO> getImages() {
         return images;
     }
 
-    public void setImages(List<ImageDTO> images) {
+    public void setImages(List<ImageCreateDTO> images) {
         this.images = images;
     }
 

@@ -1,4 +1,4 @@
-package org.wildcodeschool.MyBlog.dto;
+package org.wildcodeschool.MyBlog.dto.image;
 
 import org.hibernate.validator.constraints.URL;
 
