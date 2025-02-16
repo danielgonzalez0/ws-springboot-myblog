@@ -2,7 +2,8 @@ package org.wildcodeschool.MyBlog.mapper;
 
 import org.springframework.stereotype.Component;
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
-import org.wildcodeschool.MyBlog.dto.CategoryDTO;
+import org.wildcodeschool.MyBlog.dto.category.CategoryDTO;
+import org.wildcodeschool.MyBlog.dto.category.CategoryCreateDTO;
 import org.wildcodeschool.MyBlog.model.Category;
 
 import java.util.stream.Collectors;
@@ -26,5 +27,11 @@ public class CategoryMapper {
             }).collect(Collectors.toList()));
         }
         return categoryDTO;
+    }
+
+    public Category convertToEntity(CategoryCreateDTO categoryCreateDTO){
+        Category category = new Category();
+        category.setName(categoryCreateDTO.getName());
+        return category;
     }
 }

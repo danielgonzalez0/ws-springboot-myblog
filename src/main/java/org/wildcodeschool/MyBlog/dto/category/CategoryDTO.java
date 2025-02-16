@@ -1,4 +1,4 @@
-package org.wildcodeschool.MyBlog.dto;
+package org.wildcodeschool.MyBlog.dto.category;
 
 import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
 

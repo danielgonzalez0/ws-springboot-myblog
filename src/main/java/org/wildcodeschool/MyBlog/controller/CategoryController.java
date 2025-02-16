@@ -1,9 +1,11 @@
 package org.wildcodeschool.MyBlog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wildcodeschool.MyBlog.dto.CategoryDTO;
+import org.wildcodeschool.MyBlog.dto.category.CategoryCreateDTO;
+import org.wildcodeschool.MyBlog.dto.category.CategoryDTO;
 import org.wildcodeschool.MyBlog.model.Category;
 import org.wildcodeschool.MyBlog.service.CategoryService;
 import java.util.List;
@@ -34,13 +36,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createArticle(@RequestBody Category category) {
-        CategoryDTO newCategory = this.categoryService.createCategory(category);
+    public ResponseEntity<CategoryDTO> createArticle(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO) {
+        CategoryDTO newCategory = this.categoryService.createCategory(categoryCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryCreateDTO categoryDetails) {
         CategoryDTO category = this.categoryService.updateCategory(id, categoryDetails);
         return ResponseEntity.ok(category);
     }
