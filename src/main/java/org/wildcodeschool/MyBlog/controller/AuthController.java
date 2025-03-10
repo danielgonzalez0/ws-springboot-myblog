@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.wildcodeschool.MyBlog.dto.user.UserLoginDTO;
 import org.wildcodeschool.MyBlog.dto.user.UserRegistrationDTO;
 import org.wildcodeschool.MyBlog.model.User;
+import org.wildcodeschool.MyBlog.security.AuthentificationService;
 import org.wildcodeschool.MyBlog.service.UserService;
 
 import java.util.Set;
@@ -17,9 +19,11 @@ import java.util.Set;
 public class AuthController {
 
     private final UserService userService;
+    private final AuthentificationService authentificationService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, AuthentificationService authentificationService) {
         this.userService = userService;
+        this.authentificationService = authentificationService;
     }
 
     @PostMapping("/register")
@@ -30,5 +34,14 @@ public class AuthController {
                 Set.of("ROLE_USER")
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticate(@RequestBody UserLoginDTO userLoginDTO) {
+        String token = authentificationService.authenticate(
+                userLoginDTO.getEmail(),
+                userLoginDTO.getPassword()
+        );
+        return ResponseEntity.ok(token);
     }
 }
