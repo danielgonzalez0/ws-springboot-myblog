@@ -235,5 +235,17 @@ public class ArticleService {
         return this.articleMapper.convertToDTOList(articles);
     }
 
+    public boolean isOwner(Long articleId, Long authorId){
+       return articleRepository.findById(articleId)
+               .map(article -> {
+                   System.out.println("Vérification de l'auteur : Article ID = " + articleId + ", Auteur ID = " + authorId);
+                   return article.getArticleAuthors().stream()
+                           .anyMatch(author -> {
+                               System.out.println("Comparaison avec : " + author.getAuthor().getId());
+                               return author.getAuthor().getId().equals(authorId);
+                           });
+               })
+               .orElse(false);
+    }
 
 }

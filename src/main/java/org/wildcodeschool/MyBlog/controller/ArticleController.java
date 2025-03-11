@@ -3,6 +3,8 @@
     import jakarta.validation.Valid;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
+    import org.springframework.security.access.prepost.PreAuthorize;
+    import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.web.bind.annotation.*;
     import org.wildcodeschool.MyBlog.dto.article.ArticleCreateDTO;
     import org.wildcodeschool.MyBlog.dto.article.ArticleDTO;
@@ -42,13 +44,13 @@
             ArticleDTO articleDTO = this.articleService.createArticle(articleCreateDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(articleDTO);
         }
-
+        @PreAuthorize("hasRole('ADMIN') or @articleService.isOwner(#id, @userService.getUserId(authentication.name))")
         @PutMapping("/{id}")
         public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleUpdateDTO articleDetails) {
         ArticleDTO articleDTO = this.articleService.updateArticle(id, articleDetails);
             return ResponseEntity.ok(articleDTO);
         }
-
+        @PreAuthorize("hasRole('ADMIN') or @articleService.isOwner(#id, @userService.getUserId(authentication.name))")
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
             this.articleService.deleteArticle(id);
