@@ -2,6 +2,7 @@ package org.wildcodeschool.MyBlog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class AuthController {
         this.userService = userService;
         this.authentificationService = authentificationService;
     }
-
+    @PreAuthorize("permitAll()")
     @PostMapping("/register")
     public ResponseEntity<User> register (@RequestBody UserRegistrationDTO userRegistrationDTO) {
         User registeredUser = userService.registerUser(
@@ -35,7 +36,7 @@ public class AuthController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
-
+    @PreAuthorize("permitAll()")
     @PostMapping("/login")
     public ResponseEntity<String> authenticate(@RequestBody UserLoginDTO userLoginDTO) {
         String token = authentificationService.authenticate(

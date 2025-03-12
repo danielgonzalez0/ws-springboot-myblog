@@ -2,6 +2,7 @@ package org.wildcodeschool.MyBlog.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.MyBlog.dto.image.ImageCreateDTO;
 import org.wildcodeschool.MyBlog.dto.image.ImageDTO;
@@ -22,30 +23,35 @@ public class ImageController {
         this.imageService = imageService;
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<List<ImageDTO>> getAllImages() {
         List<ImageDTO> images = this.imageService.getAllImages();
         return ResponseEntity.ok(images);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
     public ResponseEntity<ImageDTO> getImageById(@PathVariable Long id) {
         ImageDTO image = this.imageService.getImageById(id);
         return ResponseEntity.ok(image);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<ImageDTO> createImage(@Valid @RequestBody ImageCreateDTO imageCreateDTO) {
     ImageDTO savedImage = this.imageService.createImage(imageCreateDTO);
         return ResponseEntity.status(201).body(savedImage);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ImageDTO> updateImage(@PathVariable Long id, @Valid @RequestBody ImageDTO imageDetails) {
         ImageDTO updatedImage = this.imageService.updateImage(id, imageDetails);
         return ResponseEntity.ok(updatedImage);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
         this.imageService.deleteImage(id);

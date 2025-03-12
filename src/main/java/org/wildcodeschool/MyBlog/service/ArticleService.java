@@ -236,16 +236,18 @@ public class ArticleService {
     }
 
     public boolean isOwner(Long articleId, Long authorId){
-       return articleRepository.findById(articleId)
-               .map(article -> {
-                   System.out.println("Vérification de l'auteur : Article ID = " + articleId + ", Auteur ID = " + authorId);
-                   return article.getArticleAuthors().stream()
-                           .anyMatch(author -> {
-                               System.out.println("Comparaison avec : " + author.getAuthor().getId());
-                               return author.getAuthor().getId().equals(authorId);
-                           });
-               })
-               .orElse(false);
+        Article article = this.articleRepository.findById(articleId)
+                .orElseThrow(()-> new ResourceNotFoundException("Article not found with id : " + articleId));
+        List articleAuthor = article.getArticleAuthors();
+        if(articleAuthor.isEmpty()){
+            return false;
+        }
+        return article.getArticleAuthors().stream()
+                .anyMatch(author -> {
+                    System.out.println("Comparaison avec : " + author.getAuthor().getId());
+                   return  author.getAuthor().getId().equals(authorId);
+                });
+
     }
 
 }
